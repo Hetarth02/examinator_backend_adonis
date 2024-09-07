@@ -15,7 +15,7 @@ export default class HomeController {
     const responseData = {
       userId: user.id,
       email: user.email,
-      full_name: user.full_name,
+      name: user.name,
       role: user.role,
       token: token.toJSON().token,
       institute_name: user.user_institute?.name ?? null,
@@ -32,7 +32,7 @@ export default class HomeController {
     const responseData = {
       userId: user.id,
       email: user.email,
-      full_name: user.full_name,
+      name: user.name,
       role: user.role,
       created_at: user.created_at,
       institute_name: user.user_institute?.name ?? null,

@@ -128,6 +128,172 @@
 			]
 		},
 		{
+			"name": "Institute",
+			"item": [
+				{
+					"name": "Create Institute",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Institute 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/institute/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"institute",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Institutes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/institute/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"institute",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Institute",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/institute/show/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"institute",
+								"show",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Institute",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Institute 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/institute/update/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"institute",
+								"update",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Institute",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/institute/delete/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"institute",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "Owner",
 			"item": [
 				{
@@ -137,7 +303,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"owner_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"fullName\": \"Owner 1\",\r\n    \"instituteName\": \"Institute 1\"\r\n}",
+							"raw": "{\r\n    \"email\": \"owner_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"name\": \"Owner 1\",\r\n    \"institute_name\": \"Institute 1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -207,7 +373,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"owner_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"fullName\": \"Owner 1\",\r\n    \"instituteName\": \"Institute 1\"\r\n}",
+							"raw": "{\r\n    \"email\": \"owner_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"name\": \"Owner 1\",\r\n    \"institute_name\": \"Institute 1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,7 +418,173 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "4"
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Class",
+			"item": [
+				{
+					"name": "Create Class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Class 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/class/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Classes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/class/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Class",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/class/show/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"show",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Class 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/class/update/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"update",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/class/delete/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"class",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
 								}
 							]
 						}
@@ -303,7 +635,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"teacher_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"fullName\": \"Teacher 1\",\r\n    \"instituteName\": \"Institute 1\"\r\n}",
+							"raw": "{\r\n    \"email\": \"teacher_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"name\": \"Teacher 1\",\r\n    \"subject_ids\": [\r\n        1,\r\n        2\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -359,7 +691,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "2"
+									"value": "5"
 								}
 							]
 						}
@@ -373,7 +705,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"teacher_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"fullName\": \"Teacher 1\",\r\n    \"instituteName\": \"Institute 1\"\r\n}",
+							"raw": "{\r\n    \"email\": \"teacher_1@mailinator.com\",\r\n    \"password\": \"123456789\",\r\n    \"name\": \"Teacher 1\",\r\n    \"subject_ids\": [\r\n        1,\r\n        2,\r\n        3,\r\n        4\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -393,7 +725,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "2"
+									"value": "3"
 								}
 							]
 						}
@@ -412,6 +744,356 @@
 							],
 							"path": [
 								"teacher",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Subject",
+			"item": [
+				{
+					"name": "Create Subject",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Subject 1\",\r\n    \"class_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subject/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Class Subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subject/list/class/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"list",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Class ID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subject",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subject/show/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"show",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subject",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Subject 2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subject/update/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"update",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subject",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subject/delete/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"delete",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Chapter",
+			"item": [
+				{
+					"name": "Create Chapter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subject_id\": 1,\r\n    \"name\": \"Chapter 1\",\r\n    \"content_type\": \"text\",\r\n    \"content\": \"Lorem ipsum dolor sit, amet consectetur adipisicing elit.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chapter/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chapter",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Subject Chapters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chapter/list/subject/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chapter",
+								"list",
+								"subject",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Subject ID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chapter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chapter/show/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chapter",
+								"show",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Chapter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subject_id\": 1,\r\n    \"name\": \"Chapter 1\",\r\n    \"content_type\": \"text\",\r\n    \"content\": \"Lorem ipsum dolor sit, amet consectetur adipisicing elit.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chapter/update/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chapter",
+								"update",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Chapter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chapter/delete/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chapter",
 								"delete",
 								":id"
 							],

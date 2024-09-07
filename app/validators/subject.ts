@@ -1,16 +1,16 @@
 import vine from '@vinejs/vine'
 
 const createSubjectSchema = vine.object({
-  subjectName: vine.string().trim(),
-  classId: vine.number().withoutDecimals(),
+  name: vine.string().trim(),
+  class_id: vine.number().withoutDecimals().positive(),
 })
 
 export const createSubjectValidator = vine.compile(createSubjectSchema)
 
 const updateSubjectSchema = vine.object({
-  subjectName: vine.string().trim(),
+  name: vine.string().trim(),
   params: vine.object({
-    id: vine.number().withoutDecimals(),
+    id: vine.number().withoutDecimals().positive(),
   }),
 })
 

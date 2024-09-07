@@ -3,3 +3,8 @@ export enum Role {
   owner = 'owner',
   teacher = 'teacher',
 }
+
+export enum ContentType {
+  file = 'file',
+  text = 'text',
+}

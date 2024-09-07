@@ -8,7 +8,7 @@ import type { HasManyThrough, HasOne } from '@adonisjs/lucid/types/relations'
 import Subject from '#models/subject'
 import Institute from '#models/institute'
 import { Role } from '../helpers/enums.js'
-import TeacherAssignedSubject from './teacher_assigned_subject.js'
+import TeacherAssignedSubject from '#models/teacher_assigned_subject'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -20,7 +20,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare id: number
 
   @column()
-  declare full_name: string
+  declare name: string
 
   @column()
   declare email: string
@@ -47,10 +47,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare user_institute: HasOne<typeof Institute>
 
   @hasManyThrough([() => Subject, () => TeacherAssignedSubject], {
-    throughLocalKey: 'id',
-    throughForeignKey: 'teacher_id',
-    localKey: 'subject_id',
-    foreignKey: 'id',
+    throughLocalKey: 'subject_id',
+    throughForeignKey: 'id',
+    localKey: 'id',
+    foreignKey: 'teacher_id',
   })
   declare user_subject: HasManyThrough<typeof Subject>
 

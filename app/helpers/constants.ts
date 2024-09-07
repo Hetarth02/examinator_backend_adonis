@@ -3,5 +3,6 @@ export const tableNames = {
   institutes: 'institutes',
   classes: 'classes',
   subjects: 'subjects',
+  chapters: 'chapters',
   teacher_assigned_subjects: 'teacher_assigned_subjects',
 }

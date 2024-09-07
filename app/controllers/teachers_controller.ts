@@ -9,7 +9,7 @@ import TeacherAssignedSubject from '#models/teacher_assigned_subject'
 import logger from '@adonisjs/core/services/logger'
 
 export default class TeachersController {
-  async create({ request, response }: HttpContext) {
+  async create({ request, response, auth }: HttpContext) {
     const payload = await request.validateUsing(createTeacherValidator)
 
     const trx = await db.transaction()
@@ -17,14 +17,16 @@ export default class TeachersController {
       const data: Partial<User> = {
         email: payload.email,
         password: payload.password,
-        full_name: payload.fullName,
-        institute_id: payload.instituteId,
+        name: payload.name,
         role: Role.teacher,
+      }
+      if (auth.user) {
+        data.institute_id = auth.user.institute_id
       }
       const user = await User.create(data, { client: trx })
 
       const assignData: Partial<TeacherAssignedSubject>[] = []
-      payload.subjectsId.forEach((ele: number) => {
+      payload.subject_ids.forEach((ele: number) => {
         assignData.push({
           teacher_id: user.id,
           subject_id: ele,
@@ -41,45 +43,100 @@ export default class TeachersController {
     }
   }
 
-  async list({ response }: HttpContext) {
+  async list({ response, auth }: HttpContext) {
     try {
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'created_at'])
+        .select(['id', 'name', 'email', 'institute_id', 'created_at'])
         .where('role', Role.teacher)
+        .if(auth.user?.role === Role.owner, (query) => {
+          query.where({ institute_id: auth.user?.institute_id })
+        })
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
         })
         .preload('user_subject', (query) => {
-          query.select(['id', 'name'])
+          query.select(['id', 'name', 'class_id']).preload('assigned_class', (q) => {
+            q.select(['id', 'name'])
+          })
         })
         .orderBy('id')
 
-      return helper.successResponse('Success!', data)
+      const newData: any[] = []
+
+      if (data.length) {
+        data.forEach((ele) => {
+          const userSubjects: any[] = []
+          ele.user_subject.forEach((subject) => {
+            userSubjects.push({
+              subject_id: subject.id,
+              subject_name: subject.name,
+              class_id: subject.class_id,
+              class_name: subject.assigned_class.name,
+            })
+          })
+
+          newData.push({
+            id: ele.id,
+            name: ele.name,
+            email: ele.name,
+            institute_id: ele.institute_id,
+            institute_name: ele.user_institute.name,
+            created_at: ele.created_at,
+            user_subject: userSubjects,
+          })
+        })
+      }
+
+      return helper.successResponse('Success!', newData)
     } catch (error) {
       logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
 
-  async show({ params, response }: HttpContext) {
+  async show({ params, response, auth }: HttpContext) {
     try {
       let responseData = helper.errorResponse('Not found!')
       let statusCode = 404
 
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'created_at'])
+        .select(['id', 'name', 'email', 'institute_id', 'created_at'])
         .where({ id: params.id, role: Role.teacher })
+        .if(auth.user?.role === Role.owner, (query) => {
+          query.where({ institute_id: auth.user?.institute_id })
+        })
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
         })
         .preload('user_subject', (query) => {
-          query.select(['id', 'name'])
+          query.select(['id', 'name', 'class_id']).preload('assigned_class', (q) => {
+            q.select(['id', 'name'])
+          })
         })
         .first()
 
       if (data) {
+        const userSubjects: any[] = []
+        data.user_subject.forEach((subject) => {
+          userSubjects.push({
+            subject_id: subject.id,
+            subject_name: subject.name,
+            class_id: subject.class_id,
+            class_name: subject.assigned_class.name,
+          })
+        })
+
+        const newData = {
+          id: data.id,
+          name: data.name,
+          email: data.name,
+          institute_id: data.institute_id,
+          institute_name: data.user_institute.name,
+          created_at: data.created_at,
+          user_subject: userSubjects,
+        }
         statusCode = 200
-        responseData = helper.successResponse('Success!', data)
+        responseData = helper.successResponse('Success!', newData)
       }
 
       return response.status(statusCode).send(responseData)
@@ -100,7 +157,7 @@ export default class TeachersController {
     try {
       const data: Partial<User> = {
         email: payload.email,
-        full_name: payload.fullName,
+        name: payload.name,
       }
       if (payload.password) {
         data.password = await hash.make(payload.password)
@@ -116,7 +173,7 @@ export default class TeachersController {
         .del()
 
       const assignData: Partial<TeacherAssignedSubject>[] = []
-      payload.subjectsId.forEach((ele: number) => {
+      payload.subject_ids.forEach((ele: number) => {
         assignData.push({
           teacher_id: payload.params.id,
           subject_id: ele,

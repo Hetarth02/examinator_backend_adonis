@@ -10,6 +10,9 @@ export default class Class extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare institute_id: number
+
   @column.dateTime({ autoCreate: true })
   declare created_at: DateTime
 

@@ -12,8 +12,8 @@ export default class SubjectsController {
     const trx = await db.transaction()
     try {
       const data: Partial<Subject> = {
-        name: payload.subjectName,
-        class_id: payload.classId,
+        name: payload.name,
+        class_id: payload.class_id,
       }
       await Subject.firstOrCreate(data, data, { client: trx })
 
@@ -26,9 +26,18 @@ export default class SubjectsController {
     }
   }
 
-  async list({ response }: HttpContext) {
+  async classSubjects({ params, response }: HttpContext) {
     try {
-      const data = await Subject.query().select(['id', 'name', 'created_at']).orderBy('id')
+      const data = await Subject.query()
+        .select(['id', 'name', 'class_id', 'created_at'])
+        .where({ class_id: params.id })
+        .preload('assigned_class', (query) => {
+          query.select(['id', 'name'])
+        })
+        .preload('assigned_teacher', (query) => {
+          query.select(['id', 'name'])
+        })
+        .orderBy('id')
 
       return helper.successResponse('Success!', data)
     } catch (error) {
@@ -43,7 +52,13 @@ export default class SubjectsController {
       let statusCode = 404
 
       const data = await Subject.query()
-        .select(['id', 'name', 'created_at'])
+        .select(['id', 'name', 'class_id', 'created_at'])
+        .preload('assigned_class', (query) => {
+          query.select(['id', 'name'])
+        })
+        .preload('assigned_teacher', (query) => {
+          query.select(['id', 'name'])
+        })
         .where({ id: params.id })
         .first()
 
@@ -65,7 +80,7 @@ export default class SubjectsController {
     const trx = await db.transaction()
     try {
       const data = {
-        name: payload.subjectName,
+        name: payload.name,
       }
       await Subject.query({ client: trx }).where({ id: payload.params.id }).update(data)
 

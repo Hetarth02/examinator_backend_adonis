@@ -14,8 +14,8 @@ const createOwnerSchema = vine.object({
       return !data
     }),
   password: vine.string().trim().minLength(8),
-  fullName: vine.string().trim(),
-  instituteName: vine.string().trim(),
+  name: vine.string().trim(),
+  institute_name: vine.string().trim(),
 })
 
 export const createOwnerValidator = vine.compile(createOwnerSchema)
@@ -37,10 +37,10 @@ const updateOwnerSchema = vine.object({
       return !data
     }),
   password: vine.string().trim().minLength(8).optional(),
-  fullName: vine.string().trim(),
-  instituteName: vine.string().trim(),
+  name: vine.string().trim(),
+  institute_name: vine.string().trim(),
   params: vine.object({
-    id: vine.number().withoutDecimals(),
+    id: vine.number().withoutDecimals().positive(),
   }),
 })
 

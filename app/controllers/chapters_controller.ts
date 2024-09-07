@@ -1,20 +1,26 @@
-import Institute from '#models/institute'
-import { createInstituteValidator, updateInstituteValidator } from '#validators/institute'
+import Chapter from '#models/chapter'
+import { createChapterValidator, updateChapterValidator } from '#validators/chapter'
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 import db from '@adonisjs/lucid/services/db'
 import helper from '../helpers/helper.js'
-import logger from '@adonisjs/core/services/logger'
 
-export default class InstitutesController {
-  async create({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(createInstituteValidator)
+export default class ChaptersController {
+  async create({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(createChapterValidator)
 
     const trx = await db.transaction()
     try {
-      const data = {
+      const data: Partial<Chapter> = {
         name: payload.name,
+        subject_id: payload.subject_id,
+        content_type: payload.content_type,
+        content: payload.content,
       }
-      await Institute.create(data, { client: trx })
+      if (auth.user) {
+        data.user_id = auth.user.id
+      }
+      await Chapter.create(data, { client: trx })
 
       await trx.commit()
       return helper.successResponse('Success!', data)
@@ -25,11 +31,11 @@ export default class InstitutesController {
     }
   }
 
-  async list({ response }: HttpContext) {
+  async subjectChapters({ params, response }: HttpContext) {
     try {
-      const data = await Institute.query()
-        .whereNot('id', 0)
-        .select(['id', 'name', 'created_at'])
+      const data = await Chapter.query()
+        .select(['id', 'name', 'content_type', 'content', 'created_at'])
+        .where({ subject_id: params.id })
         .orderBy('id')
 
       return helper.successResponse('Success!', data)
@@ -44,10 +50,9 @@ export default class InstitutesController {
       let responseData = helper.errorResponse('Not found!')
       let statusCode = 404
 
-      const data = await Institute.query()
-        .select(['id', 'name', 'created_at'])
+      const data = await Chapter.query()
+        .select(['id', 'user_id', 'subject_id', 'name', 'content_type', 'content', 'created_at'])
         .where({ id: params.id })
-        .whereNot('id', 0)
         .first()
 
       if (data) {
@@ -62,15 +67,21 @@ export default class InstitutesController {
     }
   }
 
-  async update({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(updateInstituteValidator)
+  async update({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(updateChapterValidator)
 
     const trx = await db.transaction()
     try {
-      const data = {
+      const data: Partial<Chapter> = {
         name: payload.name,
+        subject_id: payload.subject_id,
+        content_type: payload.content_type,
+        content: payload.content,
       }
-      await Institute.query({ client: trx }).where({ id: payload.params.id }).update(data)
+      if (auth.user) {
+        data.user_id = auth.user.id
+      }
+      await Chapter.query({ client: trx }).where({ id: payload.params.id }).update(data)
 
       await trx.commit()
       return helper.successResponse('Success!', null)
@@ -84,11 +95,10 @@ export default class InstitutesController {
   async delete({ params, response }: HttpContext) {
     const trx = await db.transaction()
     try {
-      await Institute.query({ client: trx })
+      await Chapter.query({ client: trx })
         .where({
           id: params.id,
         })
-        .whereNot('id', 0)
         .del()
 
       await trx.commit()

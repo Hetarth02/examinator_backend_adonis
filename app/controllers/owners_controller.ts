@@ -15,8 +15,8 @@ export default class OwnersController {
     const trx = await db.transaction()
     try {
       const institute = await Institute.firstOrCreate(
-        { name: payload.instituteName },
-        { name: payload.instituteName }
+        { name: payload.institute_name },
+        { name: payload.institute_name }
       )
 
       const data: Partial<User> = {
@@ -24,7 +24,7 @@ export default class OwnersController {
         email: payload.email,
         institute_id: institute.id,
         password: payload.password,
-        full_name: payload.fullName,
+        name: payload.name,
       }
       await User.create(data, { client: trx })
 
@@ -40,7 +40,7 @@ export default class OwnersController {
   async list({ response }: HttpContext) {
     try {
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'institute_id', 'created_at'])
+        .select(['id', 'name', 'email', 'institute_id', 'created_at'])
         .where('role', Role.owner)
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
@@ -60,7 +60,7 @@ export default class OwnersController {
       let statusCode = 404
 
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'institute_id', 'created_at'])
+        .select(['id', 'name', 'email', 'institute_id', 'created_at'])
         .where({ id: params.id, role: Role.owner })
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
@@ -89,14 +89,14 @@ export default class OwnersController {
     const trx = await db.transaction()
     try {
       const institute = await Institute.firstOrCreate(
-        { name: payload.instituteName },
-        { name: payload.instituteName }
+        { name: payload.institute_name },
+        { name: payload.institute_name }
       )
 
       const data: Partial<User> = {
         email: payload.email,
         institute_id: institute.id,
-        full_name: payload.fullName,
+        name: payload.name,
       }
       if (payload.password) {
         data.password = await hash.make(payload.password)
