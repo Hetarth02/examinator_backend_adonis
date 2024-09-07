@@ -6,6 +6,7 @@ import db from '@adonisjs/lucid/services/db'
 import helper from '../helpers/helper.js'
 import { Role } from '../helpers/enums.js'
 import TeacherAssignedSubject from '#models/teacher_assigned_subject'
+import logger from '@adonisjs/core/services/logger'
 
 export default class TeachersController {
   async create({ request, response }: HttpContext) {
@@ -34,6 +35,7 @@ export default class TeachersController {
       await trx.commit()
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -54,13 +56,14 @@ export default class TeachersController {
 
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
 
   async show({ params, response }: HttpContext) {
     try {
-      let responseData = helper.errorResponse()
+      let responseData = helper.errorResponse('Not found!')
       let statusCode = 404
 
       const data = await User.query()
@@ -81,6 +84,7 @@ export default class TeachersController {
 
       return response.status(statusCode).send(responseData)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
@@ -122,6 +126,7 @@ export default class TeachersController {
       await trx.commit()
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -140,6 +145,7 @@ export default class TeachersController {
       await trx.commit()
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }

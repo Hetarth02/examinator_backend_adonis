@@ -6,6 +6,7 @@ import hash from '@adonisjs/core/services/hash'
 import db from '@adonisjs/lucid/services/db'
 import helper from '../helpers/helper.js'
 import { Role } from '../helpers/enums.js'
+import logger from '@adonisjs/core/services/logger'
 
 export default class OwnersController {
   async create({ request, response }: HttpContext) {
@@ -30,6 +31,7 @@ export default class OwnersController {
       await trx.commit()
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -38,7 +40,7 @@ export default class OwnersController {
   async list({ response }: HttpContext) {
     try {
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'created_at'])
+        .select(['id', 'full_name', 'email', 'institute_id', 'created_at'])
         .where('role', Role.owner)
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
@@ -47,17 +49,18 @@ export default class OwnersController {
 
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
 
   async show({ params, response }: HttpContext) {
     try {
-      let responseData = helper.errorResponse()
+      let responseData = helper.errorResponse('Not found!')
       let statusCode = 404
 
       const data = await User.query()
-        .select(['id', 'full_name', 'email', 'created_at'])
+        .select(['id', 'full_name', 'email', 'institute_id', 'created_at'])
         .where({ id: params.id, role: Role.owner })
         .preload('user_institute', (query) => {
           query.select(['id', 'name'])
@@ -71,6 +74,7 @@ export default class OwnersController {
 
       return response.status(statusCode).send(responseData)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
@@ -105,6 +109,7 @@ export default class OwnersController {
 
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -123,6 +128,7 @@ export default class OwnersController {
       await trx.commit()
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }

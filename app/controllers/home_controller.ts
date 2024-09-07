@@ -2,18 +2,15 @@ import User from '#models/user'
 import { loginValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 import helper from '../helpers/helper.js'
-import { Role } from '../helpers/enums.js'
 
 export default class HomeController {
   async login({ request }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(payload.email, payload.password)
     const token = await User.accessTokens.create(user)
-    if (user.role !== Role.admin) {
-      await user.preload('user_institute', (query) => {
-        query.select(['id', 'name'])
-      })
-    }
+    await user.load('user_institute', (query) => {
+      query.select(['id', 'name'])
+    })
 
     const responseData = {
       userId: user.id,
@@ -28,11 +25,9 @@ export default class HomeController {
 
   async profile({ auth }: HttpContext) {
     const user = auth.getUserOrFail()
-    if (user.role !== Role.admin) {
-      await user.preload('user_institute', (query) => {
-        query.select(['id', 'name'])
-      })
-    }
+    await user.load('user_institute', (query) => {
+      query.select(['id', 'name'])
+    })
 
     const responseData = {
       userId: user.id,

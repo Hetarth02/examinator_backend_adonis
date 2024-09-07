@@ -38,7 +38,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updated_at: DateTime
 
   @column()
-  declare institute_id: number | null
+  declare institute_id: number
 
   @hasOne(() => Institute, {
     localKey: 'institute_id',

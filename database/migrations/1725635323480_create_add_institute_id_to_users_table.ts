@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.alterTable(this.tableName, (table) => {
       table
         .integer('institute_id')
-        .nullable()
+        .notNullable()
         .references('id')
         .inTable('institutes')
         .onUpdate('CASCADE')

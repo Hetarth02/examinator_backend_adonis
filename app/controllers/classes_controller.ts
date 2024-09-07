@@ -3,6 +3,7 @@ import { createClassValidator, updateClassValidator } from '#validators/class'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import helper from '../helpers/helper.js'
+import logger from '@adonisjs/core/services/logger'
 
 export default class ClassesController {
   async create({ request, response }: HttpContext) {
@@ -18,6 +19,7 @@ export default class ClassesController {
       await trx.commit()
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -34,13 +36,14 @@ export default class ClassesController {
 
       return helper.successResponse('Success!', data)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
 
   async show({ params, response }: HttpContext) {
     try {
-      let responseData = helper.errorResponse()
+      let responseData = helper.errorResponse('Not found!')
       let statusCode = 404
 
       const data = await Class.query()
@@ -58,6 +61,7 @@ export default class ClassesController {
 
       return response.status(statusCode).send(responseData)
     } catch (error) {
+      logger.error(error)
       return response.status(500).send(helper.errorResponse())
     }
   }
@@ -75,6 +79,7 @@ export default class ClassesController {
       await trx.commit()
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
@@ -92,6 +97,7 @@ export default class ClassesController {
       await trx.commit()
       return helper.successResponse('Success!', null)
     } catch (error) {
+      logger.error(error)
       await trx.rollback()
       return response.status(500).send(helper.errorResponse())
     }
