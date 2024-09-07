@@ -3,6 +3,9 @@ import { createTeacherValidator, updateTeacherValidator } from '#validators/teac
 import type { HttpContext } from '@adonisjs/core/http'
 import hash from '@adonisjs/core/services/hash'
 import db from '@adonisjs/lucid/services/db'
+import helper from '../helpers/helper.js'
+import { Role } from '../helpers/enums.js'
+import TeacherAssignedSubject from '#models/teacher_assigned_subject'
 
 export default class TeachersController {
   async create({ request, response }: HttpContext) {
@@ -10,81 +13,75 @@ export default class TeachersController {
 
     const trx = await db.transaction()
     try {
-      const data = {
-        ...payload,
-        role_id: 3,
+      const data: Partial<User> = {
+        email: payload.email,
+        password: payload.password,
+        fullName: payload.fullName,
+        instituteId: payload.instituteId,
+        role: Role.teacher,
       }
+      const user = await User.create(data, { client: trx })
 
-      await User.create(data)
+      const assignData: Partial<TeacherAssignedSubject>[] = []
+      payload.subjectsId.forEach((ele: number) => {
+        assignData.push({
+          teacherId: user.id,
+          subjectId: ele,
+        })
+      })
+      await TeacherAssignedSubject.createMany(assignData, { client: trx })
+
       await trx.commit()
-
-      return {
-        status: true,
-        message: 'Success!',
-        result: data,
-      }
+      return helper.successResponse('Success!', data)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
   async list({ response }: HttpContext) {
     try {
       const data = await User.query()
-        .select(['id', 'full_name', 'institute_name', 'created_at', 'role_id'])
-        .where('role_id', 3)
+        .select(['id', 'full_name', 'email', 'created_at'])
+        .where('role', Role.teacher)
+        .preload('user_institute', (query) => {
+          query.select(['id', 'name'])
+        })
+        .preload('user_subject', (query) => {
+          query.select(['id', 'name'])
+        })
         .orderBy('id')
 
-      return {
-        status: true,
-        message: 'Success!',
-        result: data,
-      }
+      return helper.successResponse('Success!', data)
     } catch (error) {
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
   async show({ params, response }: HttpContext) {
     try {
-      let responseData: { status: boolean; message: string; result: any | null } = {
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      }
+      let responseData = helper.errorResponse()
       let statusCode = 404
 
       const data = await User.query()
-        .select(['id', 'full_name', 'institute_name', 'created_at', 'role_id'])
-        .where({ id: params.id, role_id: 3 })
+        .select(['id', 'full_name', 'email', 'created_at'])
+        .where({ id: params.id, role: Role.teacher })
+        .preload('user_institute', (query) => {
+          query.select(['id', 'name'])
+        })
+        .preload('user_subject', (query) => {
+          query.select(['id', 'name'])
+        })
         .first()
 
       if (data) {
         statusCode = 200
-        responseData = {
-          status: true,
-          message: 'Success!',
-          result: data,
-        }
+        responseData = helper.successResponse('Success!', data)
       }
 
       return response.status(statusCode).send(responseData)
     } catch (error) {
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
@@ -97,29 +94,36 @@ export default class TeachersController {
 
     const trx = await db.transaction()
     try {
-      const data = {
+      const data: Partial<User> = {
         email: payload.email,
-        password: await hash.make(payload.password),
-        full_name: payload.fullName,
-        institute_name: payload.instituteName,
+        fullName: payload.fullName,
       }
+      if (payload.password) {
+        data.password = await hash.make(payload.password)
+      }
+      await User.query({ client: trx })
+        .where({ id: payload.params.id, role: Role.teacher })
+        .update(data)
 
-      await User.query({ client: trx }).where({ id: payload.params.id, role_id: 3 }).update(data)
+      await TeacherAssignedSubject.query({ client: trx })
+        .where({
+          teacher_id: payload.params.id,
+        })
+        .del()
+
+      const assignData: Partial<TeacherAssignedSubject>[] = []
+      payload.subjectsId.forEach((ele: number) => {
+        assignData.push({
+          teacherId: payload.params.id,
+          subjectId: ele,
+        })
+      })
+      await TeacherAssignedSubject.createMany(assignData, { client: trx })
       await trx.commit()
-
-      return {
-        status: true,
-        message: 'Success!',
-        result: null,
-      }
+      return helper.successResponse('Success!', null)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
@@ -129,24 +133,15 @@ export default class TeachersController {
       await User.query({ client: trx })
         .where({
           id: params.id,
-          role_id: 3,
+          role: Role.teacher,
         })
         .del()
-      await trx.commit()
 
-      return {
-        status: true,
-        message: 'Success!',
-        result: null,
-      }
+      await trx.commit()
+      return helper.successResponse('Success!', null)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 }

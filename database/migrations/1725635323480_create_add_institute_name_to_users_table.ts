@@ -6,10 +6,10 @@ export default class extends BaseSchema {
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
       table
-        .integer('role_id')
-        .notNullable()
+        .integer('institute_id')
+        .nullable()
         .references('id')
-        .inTable('roles')
+        .inTable('institutes')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
     })
@@ -17,7 +17,7 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.dropForeign('role_id')
+      table.dropForeign('institute_id')
     })
   }
 }

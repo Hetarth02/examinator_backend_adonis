@@ -6,9 +6,15 @@ export default class HealthChecksController {
     const report = await healthChecks.run()
 
     if (report.isHealthy) {
-      return response.ok(report)
+      return response.ok({
+        status: report.status,
+        isHealthy: report.isHealthy,
+      })
     }
 
-    return response.serviceUnavailable(report)
+    return response.serviceUnavailable({
+      status: report.status,
+      isHealthy: report.isHealthy,
+    })
   }
 }

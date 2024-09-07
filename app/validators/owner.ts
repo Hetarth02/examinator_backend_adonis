@@ -1,4 +1,5 @@
 import vine from '@vinejs/vine'
+import { tableNames } from '../helpers/constants.js'
 
 const createOwnerSchema = vine.object({
   email: vine
@@ -9,8 +10,8 @@ const createOwnerSchema = vine.object({
       all_lowercase: true,
     })
     .unique(async (db, value) => {
-      const user = await db.from('users').where({ email: value }).first()
-      return !user
+      const data = await db.from(tableNames.users).where({ email: value }).first()
+      return !data
     }),
   password: vine.string().trim().minLength(8),
   fullName: vine.string().trim(),
@@ -28,14 +29,14 @@ const updateOwnerSchema = vine.object({
       all_lowercase: true,
     })
     .unique(async (db, value, field) => {
-      const user = await db
-        .from('users')
+      const data = await db
+        .from(tableNames.users)
         .whereNot('id', field.meta.userId)
         .where({ email: value })
         .first()
-      return !user
+      return !data
     }),
-  password: vine.string().trim().minLength(8),
+  password: vine.string().trim().minLength(8).optional(),
   fullName: vine.string().trim(),
   instituteName: vine.string().trim(),
   params: vine.object({

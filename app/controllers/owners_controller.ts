@@ -1,8 +1,11 @@
+import Institute from '#models/institute'
 import User from '#models/user'
 import { createOwnerValidator, updateOwnerValidator } from '#validators/owner'
 import type { HttpContext } from '@adonisjs/core/http'
 import hash from '@adonisjs/core/services/hash'
 import db from '@adonisjs/lucid/services/db'
+import helper from '../helpers/helper.js'
+import { Role } from '../helpers/enums.js'
 
 export default class OwnersController {
   async create({ request, response }: HttpContext) {
@@ -10,81 +13,65 @@ export default class OwnersController {
 
     const trx = await db.transaction()
     try {
-      const data = {
-        ...payload,
-        role_id: 2,
-      }
+      const institute = await Institute.firstOrCreate(
+        { name: payload.instituteName },
+        { name: payload.instituteName }
+      )
 
-      await User.create(data)
+      const data: Partial<User> = {
+        role: Role.owner,
+        email: payload.email,
+        instituteId: institute.id,
+        password: payload.password,
+        fullName: payload.fullName,
+      }
+      await User.create(data, { client: trx })
+
       await trx.commit()
-
-      return {
-        status: true,
-        message: 'Success!',
-        result: data,
-      }
+      return helper.successResponse('Success!', data)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
   async list({ response }: HttpContext) {
     try {
       const data = await User.query()
-        .select(['id', 'full_name', 'institute_name', 'created_at', 'role_id'])
-        .where('role_id', 2)
+        .select(['id', 'full_name', 'email', 'created_at'])
+        .where('role', Role.owner)
+        .preload('user_institute', (query) => {
+          query.select(['id', 'name'])
+        })
         .orderBy('id')
 
-      return {
-        status: true,
-        message: 'Success!',
-        result: data,
-      }
+      return helper.successResponse('Success!', data)
     } catch (error) {
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
   async show({ params, response }: HttpContext) {
     try {
-      let responseData: { status: boolean; message: string; result: any | null } = {
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      }
+      let responseData = helper.errorResponse()
       let statusCode = 404
 
       const data = await User.query()
-        .select(['id', 'full_name', 'institute_name', 'created_at', 'role_id'])
-        .where({ id: params.id, role_id: 2 })
+        .select(['id', 'full_name', 'email', 'created_at'])
+        .where({ id: params.id, role: Role.owner })
+        .preload('user_institute', (query) => {
+          query.select(['id', 'name'])
+        })
         .first()
 
       if (data) {
         statusCode = 200
-        responseData = {
-          status: true,
-          message: 'Success!',
-          result: data,
-        }
+        responseData = helper.successResponse('Success!', data)
       }
 
       return response.status(statusCode).send(responseData)
     } catch (error) {
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
@@ -97,29 +84,29 @@ export default class OwnersController {
 
     const trx = await db.transaction()
     try {
-      const data = {
+      const institute = await Institute.firstOrCreate(
+        { name: payload.instituteName },
+        { name: payload.instituteName }
+      )
+
+      const data: Partial<User> = {
         email: payload.email,
-        password: await hash.make(payload.password),
-        full_name: payload.fullName,
-        institute_name: payload.instituteName,
+        instituteId: institute.id,
+        fullName: payload.fullName,
+      }
+      if (payload.password) {
+        data.password = await hash.make(payload.password)
       }
 
-      await User.query({ client: trx }).where({ id: payload.params.id, role_id: 2 }).update(data)
+      await User.query({ client: trx })
+        .where({ id: payload.params.id, role: Role.owner })
+        .update(data)
       await trx.commit()
 
-      return {
-        status: true,
-        message: 'Success!',
-        result: null,
-      }
+      return helper.successResponse('Success!', null)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 
@@ -129,24 +116,15 @@ export default class OwnersController {
       await User.query({ client: trx })
         .where({
           id: params.id,
-          role_id: 2,
+          role: Role.owner,
         })
         .del()
-      await trx.commit()
 
-      return {
-        status: true,
-        message: 'Success!',
-        result: null,
-      }
+      await trx.commit()
+      return helper.successResponse('Success!', null)
     } catch (error) {
       await trx.rollback()
-
-      return response.status(500).send({
-        status: false,
-        message: 'Something went wrong!',
-        result: null,
-      })
+      return response.status(500).send(helper.errorResponse())
     }
   }
 }

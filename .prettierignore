@@ -6,3 +6,4 @@ config.json
 package.json
 *.html
 *.txt
+*.postman_collection.json
