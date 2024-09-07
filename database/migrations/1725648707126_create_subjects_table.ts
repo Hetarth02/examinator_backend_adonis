@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.text('name').notNullable()
       table
         .integer('class_id')
+        .notNullable()
         .references('id')
         .inTable('classes')
         .onUpdate('CASCADE')

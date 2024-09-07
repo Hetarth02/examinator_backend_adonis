@@ -7,9 +7,6 @@ export default class HomeController {
   async login({ request }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(payload.email, payload.password)
-    await user.load('user_institute', (query) => {
-      query.select(['id', 'name'])
-    })
     const token = await User.accessTokens.create(user)
 
     const responseData = {
