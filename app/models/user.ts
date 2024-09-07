@@ -20,7 +20,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare id: number
 
   @column()
-  declare fullName: string
+  declare full_name: string
 
   @column()
   declare email: string
@@ -32,18 +32,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare role: Role
 
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare created_at: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updated_at: DateTime
 
   @column()
-  declare instituteId: number | null
+  declare institute_id: number | null
 
   @hasOne(() => Institute, {
     localKey: 'institute_id',
     foreignKey: 'id',
-    serializeAs: 'userInstitute',
   })
   declare user_institute: HasOne<typeof Institute>
 
@@ -52,7 +51,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
     throughForeignKey: 'teacher_id',
     localKey: 'subject_id',
     foreignKey: 'id',
-    serializeAs: 'userSubject',
   })
   declare user_subject: HasManyThrough<typeof Subject>
 

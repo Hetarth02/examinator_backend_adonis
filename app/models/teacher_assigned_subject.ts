@@ -2,8 +2,8 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class TeacherAssignedSubject extends BaseModel {
   @column()
-  declare teacherId: number
+  declare teacher_id: number
 
   @column()
-  declare subjectId: number
+  declare subject_id: number
 }

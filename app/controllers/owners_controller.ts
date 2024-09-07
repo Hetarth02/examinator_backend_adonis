@@ -21,9 +21,9 @@ export default class OwnersController {
       const data: Partial<User> = {
         role: Role.owner,
         email: payload.email,
-        instituteId: institute.id,
+        institute_id: institute.id,
         password: payload.password,
-        fullName: payload.fullName,
+        full_name: payload.fullName,
       }
       await User.create(data, { client: trx })
 
@@ -91,8 +91,8 @@ export default class OwnersController {
 
       const data: Partial<User> = {
         email: payload.email,
-        instituteId: institute.id,
-        fullName: payload.fullName,
+        institute_id: institute.id,
+        full_name: payload.fullName,
       }
       if (payload.password) {
         data.password = await hash.make(payload.password)

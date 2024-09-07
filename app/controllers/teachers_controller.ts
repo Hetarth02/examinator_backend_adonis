@@ -16,8 +16,8 @@ export default class TeachersController {
       const data: Partial<User> = {
         email: payload.email,
         password: payload.password,
-        fullName: payload.fullName,
-        instituteId: payload.instituteId,
+        full_name: payload.fullName,
+        institute_id: payload.instituteId,
         role: Role.teacher,
       }
       const user = await User.create(data, { client: trx })
@@ -25,8 +25,8 @@ export default class TeachersController {
       const assignData: Partial<TeacherAssignedSubject>[] = []
       payload.subjectsId.forEach((ele: number) => {
         assignData.push({
-          teacherId: user.id,
-          subjectId: ele,
+          teacher_id: user.id,
+          subject_id: ele,
         })
       })
       await TeacherAssignedSubject.createMany(assignData, { client: trx })
@@ -96,7 +96,7 @@ export default class TeachersController {
     try {
       const data: Partial<User> = {
         email: payload.email,
-        fullName: payload.fullName,
+        full_name: payload.fullName,
       }
       if (payload.password) {
         data.password = await hash.make(payload.password)
@@ -114,8 +114,8 @@ export default class TeachersController {
       const assignData: Partial<TeacherAssignedSubject>[] = []
       payload.subjectsId.forEach((ele: number) => {
         assignData.push({
-          teacherId: payload.params.id,
-          subjectId: ele,
+          teacher_id: payload.params.id,
+          subject_id: ele,
         })
       })
       await TeacherAssignedSubject.createMany(assignData, { client: trx })

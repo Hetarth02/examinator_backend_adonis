@@ -12,7 +12,7 @@ export default class SubjectsController {
     try {
       const data: Partial<Subject> = {
         name: payload.subjectName,
-        classId: payload.classId,
+        class_id: payload.classId,
       }
       await Subject.firstOrCreate(data, data, { client: trx })
 
