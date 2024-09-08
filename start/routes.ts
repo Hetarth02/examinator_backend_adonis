@@ -106,7 +106,7 @@ router
         router.get('list/class/:id', [SubjectsController, 'classSubjects'])
         router.get('show/:id', [SubjectsController, 'show'])
       })
-      .use([middleware.checkPermission({ allowedRoles: [Role.admin] })])
+      .use([middleware.checkPermission({ allowedRoles: [Role.admin, Role.owner] })])
   })
   .prefix('/subject')
   .use([middleware.auth({ guards: ['api'] })])
