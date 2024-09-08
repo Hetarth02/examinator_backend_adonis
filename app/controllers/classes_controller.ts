@@ -37,7 +37,7 @@ export default class ClassesController {
     try {
       const data = await Class.query()
         .select(['id', 'name', 'created_at'])
-        .if(auth.user?.role === Role.owner || auth.user?.role === Role.teacher, (query) => {
+        .if(auth.user?.role === Role.owner, (query) => {
           query.where({ institute_id: auth.user?.institute_id })
         })
         .preload('class_subject', (query) => {

@@ -4,6 +4,7 @@ import helper from '../helpers/helper.js'
 import { createSubjectValidator, updateSubjectValidator } from '#validators/subject'
 import Subject from '#models/subject'
 import logger from '@adonisjs/core/services/logger'
+import TeacherAssignedSubject from '#models/teacher_assigned_subject'
 
 export default class SubjectsController {
   async create({ request, response }: HttpContext) {
@@ -30,7 +31,7 @@ export default class SubjectsController {
     try {
       const data = await Subject.query()
         .select(['id', 'name', 'class_id', 'created_at'])
-        .where({ class_id: params.id })
+        .where({ class_id: Number.parseInt(params.id) })
         .preload('assigned_class', (query) => {
           query.select(['id', 'name'])
         })
@@ -40,6 +41,37 @@ export default class SubjectsController {
         .orderBy('id')
 
       return helper.successResponse('Success!', data)
+    } catch (error) {
+      logger.error(error)
+      return response.status(500).send(helper.errorResponse())
+    }
+  }
+
+  async assignedSubjects({ response, auth }: HttpContext) {
+    try {
+      const data = await TeacherAssignedSubject.query()
+        .where({ teacher_id: auth.user?.id })
+        .preload('assigned_subject', (query) => {
+          query.select(['id', 'name', 'class_id']).preload('assigned_class', (q) => {
+            q.select(['id', 'name'])
+          })
+        })
+        .orderBy('id')
+
+      const newData: any[] = []
+
+      if (data.length) {
+        data.forEach((subject) => {
+          newData.push({
+            subject_id: subject.subject_id,
+            subject_name: subject.assigned_subject.name,
+            class_id: subject.assigned_subject.class_id,
+            class_name: subject.assigned_subject.assigned_class.name,
+          })
+        })
+      }
+
+      return helper.successResponse('Success!', newData)
     } catch (error) {
       logger.error(error)
       return response.status(500).send(helper.errorResponse())

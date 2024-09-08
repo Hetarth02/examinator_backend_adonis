@@ -66,7 +66,7 @@ router
         router.get('list', [ClassesController, 'list'])
         router.get('show/:id', [ClassesController, 'show'])
       })
-      .use([middleware.checkPermission({ allowedRoles: [Role.admin, Role.owner, Role.teacher] })])
+      .use([middleware.checkPermission({ allowedRoles: [Role.admin, Role.owner] })])
   })
   .prefix('/class')
   .use([middleware.auth({ guards: ['api'] })])
@@ -100,6 +100,12 @@ router
         router.post('delete/:id', [SubjectsController, 'delete'])
       })
       .use([middleware.checkPermission({ allowedRoles: [Role.owner] })])
+
+    router
+      .group(() => {
+        router.get('list/assigned', [SubjectsController, 'assignedSubjects'])
+      })
+      .use([middleware.checkPermission({ allowedRoles: [Role.teacher] })])
 
     router
       .group(() => {
