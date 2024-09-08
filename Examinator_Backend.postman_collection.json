@@ -840,9 +840,28 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "",
+									"value": "1",
 									"description": "Class ID"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Assigned Subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subject/list/assigned",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subject",
+								"list",
+								"assigned"
 							]
 						}
 					},
