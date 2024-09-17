@@ -76,6 +76,48 @@ export default class ClassesController {
     }
   }
 
+  async listByTeacher({ response, auth }: HttpContext) {
+    try {
+      const data = await Class.query()
+        .select(['id', 'name', 'created_at'])
+        .if(auth.user?.role === Role.teacher, (query) => {
+          query.where({ institute_id: auth.user?.institute_id })
+        })
+        .preload('class_subject', (query) => {
+          query.select(['id', 'name']).preload('assigned_teacher', (q) => {
+            q.select(['id', 'name'])
+          })
+        })
+        .orderBy('id')
+
+      const newData: any[] = []
+
+      if (data.length) {
+        data.forEach((ele) => {
+          ele.class_subject.forEach((obj) => {
+            const assignedIds = obj.assigned_teacher.map((t) => t.id)
+
+            if (assignedIds.includes(auth.user?.id || 0)) {
+              if (newData.find((e) => e.id === ele.id) === undefined) {
+                newData.push({
+                  id: ele.id,
+                  name: ele.name,
+                  created_at: ele.created_at,
+                  class_subject: obj,
+                })
+              }
+            }
+          })
+        })
+      }
+
+      return helper.successResponse('Success!', newData)
+    } catch (error) {
+      logger.error(error)
+      return response.status(500).send(helper.errorResponse())
+    }
+  }
+
   async show({ params, response, auth }: HttpContext) {
     try {
       let responseData = helper.errorResponse('Not found!')

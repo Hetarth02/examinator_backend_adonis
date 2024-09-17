@@ -67,6 +67,13 @@ router
         router.get('show/:id', [ClassesController, 'show'])
       })
       .use([middleware.checkPermission({ allowedRoles: [Role.admin, Role.owner] })])
+
+    router
+      .group(() => {
+        router.get('byTeacher', [ClassesController, 'listByTeacher'])
+        // router.get('show/:id', [ClassesController, 'show'])
+      })
+      .use([middleware.checkPermission({ allowedRoles: [Role.admin, Role.owner, Role.teacher] })])
   })
   .prefix('/class')
   .use([middleware.auth({ guards: ['api'] })])
