@@ -62,7 +62,7 @@ export default class TeachersController {
         .orderBy('id')
 
       const newData: any[] = []
-        console.log(data)
+
       if (data.length) {
         data.forEach((ele) => {
           const userSubjects: any[] = []
