@@ -62,7 +62,7 @@ export default class TeachersController {
         .orderBy('id')
 
       const newData: any[] = []
-
+        console.log(data)
       if (data.length) {
         data.forEach((ele) => {
           const userSubjects: any[] = []
@@ -78,7 +78,7 @@ export default class TeachersController {
           newData.push({
             id: ele.id,
             name: ele.name,
-            email: ele.name,
+            email: ele.email,
             institute_id: ele.institute_id,
             institute_name: ele.user_institute.name,
             created_at: ele.created_at,
